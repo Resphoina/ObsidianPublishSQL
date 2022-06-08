@@ -1079,4 +1079,84 @@ AND   月份 < '20221231'
 ORDER BY 月份 DESC;
 ```
 
+#### 简化版—20220608
+```SQL
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[PASSWORD]
+--SERVER:192.168.5.109
+--LOGINNAME:HR_DATA
+--PASSWORD:hrdata123*
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[DECLARE]
+DECLARE @BADGE TABLE(NUM INT IDENTITY(1, 1), BADGE NVARCHAR(1000));
+DECLARE @BADGE_INPUT NVARCHAR(1000);
+DECLARE @TERM NVARCHAR(1000);
+DECLARE @PERFORMANCE_BASIC INT;
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[SET]
+INSERT INTO @BADGE(BADGE)
+SELECT VALUE FROM STRING_SPLIT('102470', '|');
+SET @PERFORMANCE_BASIC = 1;
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[全表字段]
+SET NOEXEC ON;
+--格式1
+SELECT *
+FROM V_XZ WITH(NOLOCK)
+WHERE BADGE IN(SELECT BADGE FROM @BADGE)
+ORDER BY TERM DESC;
+--格式2
+SELECT TERM,/*薪资核算月*/
+       BADGE,/*工号*/ NAME,/*姓名*/
+       BZGZ,/*基本工资*/ CQGZ,/*出勤工资*/ WPJT,/*外派津贴*/ JXGZ,/*绩效工资*/
+       QQJ,/*全勤奖*/ SLJT,/*司龄津贴*/ ZBF,/*值班费*/ QTJJ,/*其他津贴*/
+       GWBT,/*高温补贴*/ JTBT,/*交通补贴*/ ZWBT,/*驻外补贴*/
+       DHBT,/*电话补贴*/ HSBT,/*伙食补贴*/ TSBT,/*特殊补贴*/ GANGWBT,/*岗位补贴*/ ZXBT,/*专项补贴*/
+       QTBT,/*其他补贴*/ DNBT,/*电脑补贴*/ GZTZ,/*工资调整项*/
+       KBX,/*扣保险金*/
+       KZFGJJ,/*扣住房公积金*/
+       DKS,/*代扣税*/
+       GYYJ,/*工衣押金*/ KSSZJ,/*扣宿舍租金*/ KSDF,/*扣水电费*/ BMKK,/*部门扣款*/
+       KQKK,/*考勤扣款*/ DNKK,/*电脑扣款*/ GCKK,/*购车扣款*/ GFKK,/*购房扣款*/ QTJJ,/*其他借款*/
+       WWCRWKK,/*未完成任务扣款*/ AXKK,/*爱心捐款*/ QTKK,/*其他扣款*/ DJSB,/*代缴社保*/
+       GRJK,/*个人借款*/ TZJK,/*投资借款扣款*/
+       YFGZ,/*应发工资*/ SFHJ,/*实发合计*/
+       MDJBF_HD, YYYY, MM, DD, YYYY1, MM1, DD1
+FROM V_XZ WITH(NOLOCK)
+WHERE BADGE IN(SELECT BADGE FROM @BADGE)
+ORDER BY TERM DESC
+SET NOEXEC OFF;
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[我用字段]
+WITH CTE
+AS (SELECT CONVERT(CHAR(6), TERM, 112) AS 月份,
+           BADGE AS 工号,
+           NAME AS 姓名,
+           CQGZ AS 出勤工资,
+           (CASE WHEN TERM >= '20180101' AND TERM < '20181031' THEN '1200'
+                 WHEN TERM >= '20181031' AND TERM < '20190101' THEN '1800'
+                 WHEN TERM >= '20190101' AND TERM < '20190901' THEN '2400'
+                 WHEN TERM >= '20190901' AND TERM < '20220101' THEN '2500'
+                 WHEN TERM >= '20220101' AND TERM < '20220501' THEN '2600'
+                 WHEN TERM >= '20220501' AND TERM < '20300101' THEN '4000'
+           END) AS 绩效基础,
+           (JXGZ * 1.00) / (CASE WHEN TERM >= '20180101' AND TERM < '20181031' THEN '1200'
+                                 WHEN TERM >= '20181031' AND TERM < '20190101' THEN '1800'
+                                 WHEN TERM >= '20190101' AND TERM < '20190901' THEN '2400'
+                                 WHEN TERM >= '20190901' AND TERM < '20220101' THEN '2500'
+                                 WHEN TERM >= '20220101' AND TERM < '20220501' THEN '2600'
+                                 WHEN TERM >= '20220501' AND TERM < '20300101' THEN '4000'
+                            END) AS 绩效点数,
+           --(JXGZ * 1.00) / @PERFORMANCE_BASIC AS 绩效点数,
+           JXGZ AS 绩效工资,
+           QQJ AS 全勤,
+           (SLJT + ZBF + QTJJ + DHBT + HSBT + TSBT + GANGWBT + ZXBT + DNBT + GZTZ) AS 补贴,
+           (KQKK + KBX + KZFGJJ + DKS) AS 扣款,
+           KQKK AS 考勤扣款,
+           YFGZ AS 应发工资,
+           SFHJ AS 实发合计
+    FROM V_XZ WITH(NOLOCK)
+    WHERE BADGE IN(SELECT BADGE FROM @BADGE))
+SELECT 月份, 工号, 姓名, 出勤工资, 绩效基础, 绩效点数, 绩效工资, 全勤, 补贴, 扣款, 应发工资, 实发合计,
+       (出勤工资 + 绩效工资 + 全勤 + 补贴 + 考勤扣款 - 应发工资) AS MYCAL
+FROM CTE
+WHERE 月份 > '20211231'
+AND   月份 < '20221231'
+ORDER BY 月份 DESC;
+```
 <hr style="border:3px solid ForestGreen"> </hr>
