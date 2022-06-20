@@ -4,7 +4,7 @@
 
 
 # <font color=#DC143C>(20220504)-(语句学习)-(000)-(NP)-(介绍Tally Table)</font>
-URL:: 
+URL::
 
 ```
 dataview
