@@ -18,7 +18,7 @@
 2. [[(6_000)(个人系统)/(6_002)(飞行清单)/√(20220209)-(清单宝典)-(602)-(手册)-(软件手册)|软件手册]]
 
 
-[[(8_000)(查询系统)/(8_002)(发布出版)/√FIELD ASSEMBLIES|(8_000)(查询系统)/(8_002)(发布出版)/√FIELD ASSEMBLIES]]
+[[(8_000)(查询系统)/(8_002)(发布出版)/√FIELD ASSEMBLIES SYSTEM|(8_000)(查询系统)/(8_002)(发布出版)/√FIELD ASSEMBLIES SYSTEM]]
 
 
 
@@ -45,7 +45,7 @@
 
 [[(8_000)(查询系统)/(8_002)(发布出版)/√KEY CONTRIBUTIONS|KEY CONTRIBUTIONS]]
 
-[[(8_000)(查询系统)/(8_002)(发布出版)/√FIELD ASSEMBLIES|FIELD ASSEMBLIES]]
+[[(8_000)(查询系统)/(8_002)(发布出版)/√FIELD ASSEMBLIES SYSTEM|FIELD ASSEMBLIES SYSTEM]]
 
 [(20220620)-(知识管理)-(777)-(方法)-(去消化而非摄入)](https://obsius.site/0r6n4s362t3s2b5x103e)——<mark style="background: #FF5582A6;">首次</mark> 
 
