@@ -11,7 +11,7 @@ table without id 萃取重点, 萃取难点, 萃取锚点, 萃取输出
 where contains(TITLES, "Happy_Xiaotodoist技巧与使用心得")
 ```
 
-## 优势
+## 01.优势
 + 全平台(一个账户全部同步)
 + 数百个可以关联的应用
 + 全中文支持，全中文使用手册
