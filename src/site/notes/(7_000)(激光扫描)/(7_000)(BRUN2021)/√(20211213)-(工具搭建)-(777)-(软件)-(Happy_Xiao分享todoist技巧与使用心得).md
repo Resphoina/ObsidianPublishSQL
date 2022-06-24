@@ -42,7 +42,7 @@ where contains(TITLES, "Happy_Xiaotodoist技巧与使用心得")
     + 利于检索
     + 利于查看
 
-## 框架
+## 03.框架
 + 收件箱
 + 今天
 + 未来7天
@@ -66,7 +66,7 @@ where contains(TITLES, "Happy_Xiaotodoist技巧与使用心得")
     + 每年
 + 工作
 
-## 标签
+## 04.标签
 + 标签
     + 标签分类
         + 进行(紫色)
@@ -95,7 +95,7 @@ where contains(TITLES, "Happy_Xiaotodoist技巧与使用心得")
             + 家庭
             + 购物
 
-## 过滤器
+## 05.过滤器
 + 首页
 + 所有任务
 + 未定期
@@ -108,7 +108,7 @@ where contains(TITLES, "Happy_Xiaotodoist技巧与使用心得")
 + 正在进行→收藏|正在进行:`过滤器指令:@进行`
 + 黄金十项→收藏|黄金十项:**_今明两天重要事项不能超过十项_**
 
-## 其他
+## 06.其他
 + 不要给所有任务都设定到期日
     + 减少心理压力
     + 添加标签"进行"
