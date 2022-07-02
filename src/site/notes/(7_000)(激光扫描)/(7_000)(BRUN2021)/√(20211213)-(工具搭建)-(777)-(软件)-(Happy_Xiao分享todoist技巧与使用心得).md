@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/7-000/7-000-brun-2021/20211213-777-happy-xiao-todoist/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"ALIASES":["Happy_Xiao分享todoist技巧与使用心得"],"TITLES":["Happy_Xiao分享todoist技巧与使用心得"],"SERIES":["TODOIST"],"TAGS":["01学习进化/任务管理","01学习进化/时间管理","01学习进化/工具管理"],"阅读状态":["已读"],"内容评级":[10],"知识类型":["TODOIST"],"内容作者":["Happy_Xiao"],"初读时间":[20211213],"重读时间":[],"permalink":"/7-000/7-000-brun-2021/20211213-777-happy-xiao-todoist/","dgHomeLink":true,"dgPassFrontmatter":true}
 ---
 
 
