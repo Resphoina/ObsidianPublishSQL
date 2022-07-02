@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20220609-000-np-tally-table/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"ALIASES":["应用TallyTable"],"TITLES":["应用TallyTable"],"SERIES":["语句学习"],"TAGS":["MYJ/轮子重用"],"量子榜单":[1],"创建时间":[20220609],"功能实现":["字符串拆分表值函数"],"关联功能":["TallyTable"],"算法亮点":[],"permalink":"/2-021/20220609-000-np-tally-table/","dgHomeLink":true,"dgPassFrontmatter":true}
 ---
 
 
