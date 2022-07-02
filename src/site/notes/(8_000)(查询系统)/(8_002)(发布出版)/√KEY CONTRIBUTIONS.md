@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/8-000/8-002/key-contributions/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/8-000/8-002/key-contributions/","dgHomeLink":true,"dgPassFrontmatter":true}
 ---
 
 
