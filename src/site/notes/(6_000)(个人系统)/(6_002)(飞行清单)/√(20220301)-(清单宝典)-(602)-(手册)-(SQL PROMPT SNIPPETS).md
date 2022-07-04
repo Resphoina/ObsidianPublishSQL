@@ -33,6 +33,82 @@ where contains(TITLES, "SQL PROMPT SNIPPETS")
 
 <hr style="border:2px solid DeepSkyBlue"> </hr>
 
+### 表上下游——MSYS_shangxiayou
+#### 逻辑压缩
+基于过程脚本的写法规律提取`tbTableIn`、`tbTableOut`、`tbTableTemp`三个表，依照以下的查询语句实现：
++ 从过程找表
++ 从表找过程
++ 从表找过程和作业信息
++ 从表找多级调用或者多级源头的信息
+
+#### 注意事项
++ tbTableIn、tbTableOut、tbTableTemp当天修改的部分无法查询
++ 动态拼接无法查询
+
+```SQL
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从过程找表]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询过程的源头表——用什么表生成]
+--案例:EveryDayRenew_stsale_Proc_new
+SELECT 数据库, 对象类型, 对象名, 表名
+FROM odsdbbi.dbo.tbTableIn WITH(NOLOCK)
+WHERE 对象名 = 'EveryDayRenew_stsale_Proc_new'--过程名
+ORDER BY 数据库, 对象类型;
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询过程的生成表——生成了什么表]
+SELECT 数据库, 对象类型, 对象名, 表名
+FROM odsdbbi.dbo.tbTableOut WITH(NOLOCK)
+WHERE 对象名 = 'EveryDayRenew_stsale_Proc_new'
+ORDER BY 数据库, 对象类型;
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询过程的临时表——生成的临时表]
+SELECT 数据库, 对象类型, 对象名, 临时表
+FROM odsdbbi.dbo.tbTableTemp WITH(NOLOCK)
+WHERE 对象名 = 'EveryDayRenew_stsale_Proc_new'
+ORDER BY 数据库, 对象类型;
+--CREATE CLUSTERED INDEX IDX_OBJECT ON tbTableTemp(对象名);
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从表找过程]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的源头过程——用什么表生成]
+SELECT 表名, 数据库, 对象类型, 对象名
+FROM odsdbbi.dbo.tbTableOut WITH(NOLOCK)
+WHERE 表名 = 'odsdb.dbo.m_stsale'
+ORDER BY 对象类型 DESC, 数据库;
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的调用过程——什么过程用到了表]
+SELECT 表名, 数据库, 对象类型, 对象名
+FROM odsdbbi.dbo.tbTableIn WITH(NOLOCK)
+WHERE 表名 = 'odsdb.dbo.m_stsale'
+ORDER BY 对象类型 DESC, 数据库;
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从表找过程和作业信息]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的源头过程和作业信息——用什么表生成进而找到过程]
+SELECT 表名, m1.数据库, 对象类型, 对象名, 作业名, 步骤号, 步骤名
+FROM odsdbbi.dbo.tbTableOut AS m1 WITH(NOLOCK)
+LEFT OUTER JOIN odsdbbi.dbo.tbJob AS m2 WITH(NOLOCK)
+ON  m1.数据库 = m2.数据库
+AND m1.对象名 = m2.过程名
+WHERE 表名 = 'odsdb.dbo.m_stsale'
+ORDER BY 对象类型 DESC, 数据库, 作业名, 步骤号;
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的调用过程和作业信息——什么过程用到了表进而找到过程]
+SELECT 表名, m1.数据库, 对象类型, 对象名, 作业名, 步骤号, 步骤名
+FROM odsdbbi.dbo.tbTableIn AS m1 WITH(NOLOCK)
+LEFT OUTER JOIN odsdbbi.dbo.tbJob AS m2 WITH(NOLOCK)
+ON  m1.数据库 = m2.数据库
+AND m1.对象名 = m2.过程名
+WHERE 表名 = 'odsdb.dbo.m_stsale'
+ORDER BY 对象类型 DESC, 数据库, 作业名, 步骤号;
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从表找多级调用或者多级源头的信息]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[表调用多级查询]
+--∷∷∷∷∷∷[完整显示格式|一级]
+EXEC odsdbbi.dbo.tbApply @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'full';
+--∷∷∷∷∷∷[简约显示格式|一级]
+EXEC odsdbbi.dbo.tbApply @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'simple';
+--∷∷∷∷∷∷[简约显示格式|二级]
+EXEC odsdbbi.dbo.tbApply @table_name = 'odsdb.dbo.m_stsale', @level = '2', @format = 'simple';
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[表源头多级查询]
+--∷∷∷∷∷∷[完整显示格式|一级]
+EXEC odsdbbi.dbo.tbSource @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'full';
+--∷∷∷∷∷∷[简约显示格式|一级]
+EXEC odsdbbi.dbo.tbSource @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'simple';
+--∷∷∷∷∷∷[简约显示格式|二级]
+EXEC odsdbbi.dbo.tbSource @table_name = 'odsdb.dbo.m_stsale', @level = '2', @format = 'simple';
+```
+
 ### 查表作业——MSYS_biaozuoye
 ```SQL
 --↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[赋值变量]
