@@ -45,6 +45,250 @@ where contains(TITLES, "SQL PROMPT SNIPPETS")
 + tbTableIn、tbTableOut、tbTableTemp当天修改的部分无法查询
 + 动态拼接无法查询
 
+#### 新版本——20220705
+```SQL
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[案例思想]
+SET NOEXEC ON;
+SELECT CHARINDEX('12345', '123456789', 1),/*前缀相同-顺序*/
+       CHARINDEX(REVERSE('12345'), REVERSE('123456789')),/*前缀相同-倒序*/
+       CHARINDEX(REVERSE('12345'), REVERSE('123A456789')),/*前缀不同-顺序*/
+       CHARINDEX('12345', '12345', 1),/*完全相同-顺序*/
+       CHARINDEX(REVERSE('12345'), REVERSE('12345'), 1),/*完全相同-倒序*/
+       CHARINDEX('12345', 'AANNCC123456789', 1),/*满足出现-顺序*/
+       CHARINDEX(REVERSE('12345'), REVERSE('AANNCC123456789'), 1)/*满足出现-倒序*/
+SET NOEXEC OFF;
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[变量赋值]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[DECLARE]
+DECLARE @OBJECT NVARCHAR(1000);
+DECLARE @CHOICE INT;
+DECLARE @FULLMATCH INT;
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[SET]
+SET @OBJECT = N'shx_qh_history_proc';
+--SET @OBJECT = N'basic_proc';
+SET @OBJECT = N'odsdbfq.dbo.moutdrpt';
+SET @CHOICE = 2;
+SET @FULLMATCH = 0;/*|1精确|0模糊|*/
+SET @FULLMATCH = 1;/*|1精确|0模糊|*/
+--1:过程——用什么表生成
+--2:过程——生成了什么表
+--3:过程——生成的临时表
+--4:表——用什么表生成
+--5:表——什么过程用到了表
+--6:表——用什么表生成进而找到过程
+--7:表——什么过程用到了表进而找到过程
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从过程找表]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询过程的源头表——过程——用什么表生成]
+IF @CHOICE = 1
+BEGIN
+     --案例:EveryDayRenew_stsale_Proc_new
+     SELECT 数据库, 对象类型, 对象名, 表名
+     FROM odsdbbi.dbo.tbTableIn WITH(NOLOCK)
+     WHERE(CHARINDEX(@OBJECT, 对象名, 1) > 0)
+     AND  (@FULLMATCH = 0 OR (@FULLMATCH = 1 AND (CHARINDEX(REVERSE(@OBJECT), REVERSE(对象名), 1) = CHARINDEX(@OBJECT, 对象名, 1))))
+     ORDER BY 数据库, 对象类型;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询过程的生成表——过程——生成了什么表]
+IF @CHOICE = 2
+BEGIN
+     SELECT 数据库, 对象类型, 对象名, 表名
+     FROM odsdbbi.dbo.tbTableOut WITH(NOLOCK)
+     WHERE (CHARINDEX(@OBJECT, 对象名, 1) > 0)
+     AND   (@FULLMATCH = 0 OR (@FULLMATCH = 1 AND (CHARINDEX(REVERSE(@OBJECT), REVERSE(对象名), 1) = CHARINDEX(@OBJECT, 对象名, 1))))
+     ORDER BY 数据库, 对象类型;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询过程的临时表——过程——生成的临时表]
+IF @CHOICE = 3
+BEGIN
+     SELECT 数据库, 对象类型, 对象名, 临时表
+     FROM odsdbbi.dbo.tbTableTemp WITH(NOLOCK)
+     WHERE (CHARINDEX(@OBJECT, 对象名, 1) > 0)
+     AND   (@FULLMATCH = 0 OR (@FULLMATCH = 1 AND (CHARINDEX(REVERSE(@OBJECT), REVERSE(对象名), 1) = CHARINDEX(@OBJECT, 对象名, 1))))
+     ORDER BY 数据库, 对象类型;
+END
+--CREATE CLUSTERED INDEX IDX_OBJECT ON tbTableTemp(对象名);
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从表找过程]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的源头过程——表——用什么表生成]
+IF @CHOICE = 4
+BEGIN
+     SELECT 表名, 数据库, 对象类型, 对象名
+     FROM odsdbbi.dbo.tbTableOut WITH(NOLOCK)
+     WHERE (CHARINDEX(@OBJECT, 表名, 1) > 0)
+     AND   (@FULLMATCH = 0 OR (@FULLMATCH = 1 AND (CHARINDEX(REVERSE(@OBJECT), REVERSE(表名), 1) = CHARINDEX(@OBJECT, 表名, 1))))
+     ORDER BY 对象类型 DESC, 数据库;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的调用过程——表——什么过程用到了表]
+IF @CHOICE = 5
+BEGIN
+     SELECT 表名, 数据库, 对象类型, 对象名
+     FROM odsdbbi.dbo.tbTableIn WITH(NOLOCK)
+     WHERE (CHARINDEX(@OBJECT, 表名, 1) > 0)
+     AND   (@FULLMATCH = 0 OR (@FULLMATCH = 1 AND (CHARINDEX(REVERSE(@OBJECT), REVERSE(表名), 1) = CHARINDEX(@OBJECT, 表名, 1))))
+     ORDER BY 对象类型 DESC, 数据库;
+END
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从表找过程和作业信息]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的源头过程和作业信息——表——用什么表生成进而找到过程]
+IF @CHOICE = 6
+BEGIN
+     SELECT 表名, m1.数据库, 对象类型, 对象名, 作业名, 步骤号, 步骤名
+     FROM odsdbbi.dbo.tbTableOut AS m1 WITH(NOLOCK)
+     LEFT OUTER JOIN odsdbbi.dbo.tbJob AS m2 WITH(NOLOCK)
+     ON  m1.数据库 = m2.数据库
+     AND m1.对象名 = m2.过程名
+     WHERE (CHARINDEX(@OBJECT, 表名, 1) > 0)
+     AND   (@FULLMATCH = 0 OR (@FULLMATCH = 1 AND (CHARINDEX(REVERSE(@OBJECT), REVERSE(表名), 1) = CHARINDEX(@OBJECT, 表名, 1))))
+     ORDER BY 对象类型 DESC, 数据库, 作业名, 步骤号;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的调用过程和作业信息——表——什么过程用到了表进而找到过程]
+IF @CHOICE = 7
+BEGIN
+     SELECT 表名, m1.数据库, 对象类型, 对象名, 作业名, 步骤号, 步骤名
+     FROM odsdbbi.dbo.tbTableIn AS m1 WITH(NOLOCK)
+     LEFT OUTER JOIN odsdbbi.dbo.tbJob AS m2 WITH(NOLOCK)
+     ON  m1.数据库 = m2.数据库
+     AND m1.对象名 = m2.过程名
+     WHERE (CHARINDEX(@OBJECT, 表名, 1) > 0)
+     AND   (@FULLMATCH = 0 OR (@FULLMATCH = 1 AND (CHARINDEX(REVERSE(@OBJECT), REVERSE(表名), 1) = CHARINDEX(@OBJECT, 表名, 1))))
+     ORDER BY 对象类型 DESC, 数据库, 作业名, 步骤号;
+END
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从表找多级调用或者多级源头的信息]
+SET NOEXEC ON
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[表调用多级查询]
+--∷∷∷∷∷∷[完整显示格式|一级]
+EXEC odsdbbi.dbo.tbApply @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'full';
+--∷∷∷∷∷∷[简约显示格式|一级]
+EXEC odsdbbi.dbo.tbApply @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'simple';
+--∷∷∷∷∷∷[简约显示格式|二级]
+EXEC odsdbbi.dbo.tbApply @table_name = 'odsdb.dbo.m_stsale', @level = '2', @format = 'simple';
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[表源头多级查询]
+--∷∷∷∷∷∷[完整显示格式|一级]
+EXEC odsdbbi.dbo.tbSource @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'full';
+--∷∷∷∷∷∷[简约显示格式|一级]
+EXEC odsdbbi.dbo.tbSource @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'simple';
+--∷∷∷∷∷∷[简约显示格式|二级]
+EXEC odsdbbi.dbo.tbSource @table_name = 'odsdb.dbo.m_stsale', @level = '2', @format = 'simple';
+SET NOEXEC OFF
+```
+
+#### 老版本——20220705
+```SQL
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[DECLARE]
+DECLARE @OBJECT NVARCHAR(1000);
+DECLARE @CHOICE INT;
+DECLARE @FULLMATCH INT;
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[SET]
+SET @OBJECT = N'EveryDayRenew_stsale_Proc';
+SET @OBJECT = N'odsdbfq.dbo.goods';
+SET @CHOICE = 1;
+SET @FULLMATCH = 0;/*|1精确|0模糊|*/
+SET @FULLMATCH = 1;/*|1精确|0模糊|*/
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从过程找表]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询过程的源头表——过程——用什么表生成]
+IF @CHOICE = 1
+BEGIN
+     --案例:EveryDayRenew_stsale_Proc_new
+     SELECT 数据库, 对象类型, 对象名, 表名
+     FROM odsdbbi.dbo.tbTableIn WITH(NOLOCK)
+     WHERE (CASE WHEN @FULLMATCH = 0
+                 THEN CHARINDEX(@OBJECT, 对象名, 1)
+                 ELSE CHARINDEX(REVERSE(@OBJECT), REVERSE(对象名), 1)
+                 END) = 1
+     ORDER BY 数据库, 对象类型;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询过程的生成表——过程——生成了什么表]
+IF @CHOICE = 2
+BEGIN
+     SELECT 数据库, 对象类型, 对象名, 表名
+     FROM odsdbbi.dbo.tbTableOut WITH(NOLOCK)
+     WHERE (CASE WHEN @FULLMATCH = 0
+                 THEN CHARINDEX(@OBJECT, 对象名, 1)
+                 ELSE CHARINDEX(REVERSE(@OBJECT), REVERSE(对象名), 1)
+                 END) = 1
+     ORDER BY 数据库, 对象类型;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询过程的临时表——过程——生成的临时表]
+IF @CHOICE = 3
+BEGIN
+     SELECT 数据库, 对象类型, 对象名, 临时表
+     FROM odsdbbi.dbo.tbTableTemp WITH(NOLOCK)
+     WHERE (CASE WHEN @FULLMATCH = 0
+                 THEN CHARINDEX(@OBJECT, 对象名, 1)
+                 ELSE CHARINDEX(REVERSE(@OBJECT), REVERSE(对象名), 1)
+                 END) = 1
+     ORDER BY 数据库, 对象类型;
+END
+--CREATE CLUSTERED INDEX IDX_OBJECT ON tbTableTemp(对象名);
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从表找过程]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的源头过程——表——用什么表生成]
+IF @CHOICE = 4
+BEGIN
+     SELECT 表名, 数据库, 对象类型, 对象名
+     FROM odsdbbi.dbo.tbTableOut WITH(NOLOCK)
+     WHERE (CASE WHEN @FULLMATCH = 0
+                 THEN CHARINDEX(@OBJECT, 表名, 1)
+                 ELSE CHARINDEX(REVERSE(@OBJECT), REVERSE(表名), 1)
+                 END) = 1
+     ORDER BY 对象类型 DESC, 数据库;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的调用过程——表——什么过程用到了表]
+IF @CHOICE = 5
+BEGIN
+     SELECT 表名, 数据库, 对象类型, 对象名
+     FROM odsdbbi.dbo.tbTableIn WITH(NOLOCK)
+     WHERE (CASE WHEN @FULLMATCH = 0
+                 THEN CHARINDEX(@OBJECT, 表名, 1)
+                 ELSE CHARINDEX(REVERSE(@OBJECT), REVERSE(表名), 1)
+                 END) = 1
+     ORDER BY 对象类型 DESC, 数据库;
+END
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从表找过程和作业信息]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的源头过程和作业信息——表——用什么表生成进而找到过程]
+IF @CHOICE = 6
+BEGIN
+     SELECT 表名, m1.数据库, 对象类型, 对象名, 作业名, 步骤号, 步骤名
+     FROM odsdbbi.dbo.tbTableOut AS m1 WITH(NOLOCK)
+     LEFT OUTER JOIN odsdbbi.dbo.tbJob AS m2 WITH(NOLOCK)
+     ON  m1.数据库 = m2.数据库
+     AND m1.对象名 = m2.过程名
+     WHERE (CASE WHEN @FULLMATCH = 0
+                 THEN CHARINDEX(@OBJECT, 表名, 1)
+                 ELSE CHARINDEX(REVERSE(@OBJECT), REVERSE(表名), 1)
+                 END) = 1
+     ORDER BY 对象类型 DESC, 数据库, 作业名, 步骤号;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询表的调用过程和作业信息——表——什么过程用到了表进而找到过程]
+IF @CHOICE = 7
+BEGIN
+     SELECT 表名, m1.数据库, 对象类型, 对象名, 作业名, 步骤号, 步骤名
+     FROM odsdbbi.dbo.tbTableIn AS m1 WITH(NOLOCK)
+     LEFT OUTER JOIN odsdbbi.dbo.tbJob AS m2 WITH(NOLOCK)
+     ON  m1.数据库 = m2.数据库
+     AND m1.对象名 = m2.过程名
+     WHERE (CASE WHEN @FULLMATCH = 0
+                 THEN CHARINDEX(@OBJECT, 表名, 1)
+                 ELSE CHARINDEX(REVERSE(@OBJECT), REVERSE(表名), 1)
+                 END) = 1
+     ORDER BY 对象类型 DESC, 数据库, 作业名, 步骤号;
+END
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从表找多级调用或者多级源头的信息]
+SET NOEXEC ON
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[表调用多级查询]
+--∷∷∷∷∷∷[完整显示格式|一级]
+EXEC odsdbbi.dbo.tbApply @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'full';
+--∷∷∷∷∷∷[简约显示格式|一级]
+EXEC odsdbbi.dbo.tbApply @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'simple';
+--∷∷∷∷∷∷[简约显示格式|二级]
+EXEC odsdbbi.dbo.tbApply @table_name = 'odsdb.dbo.m_stsale', @level = '2', @format = 'simple';
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[表源头多级查询]
+--∷∷∷∷∷∷[完整显示格式|一级]
+EXEC odsdbbi.dbo.tbSource @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'full';
+--∷∷∷∷∷∷[简约显示格式|一级]
+EXEC odsdbbi.dbo.tbSource @table_name = 'odsdb.dbo.m_stsale', @level = '1', @format = 'simple';
+--∷∷∷∷∷∷[简约显示格式|二级]
+EXEC odsdbbi.dbo.tbSource @table_name = 'odsdb.dbo.m_stsale', @level = '2', @format = 'simple';
+SET NOEXEC OFF
+```
+
+#### 初始版——20220705
 ```SQL
 --↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[从过程找表]
 --⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[查询过程的源头表——用什么表生成]
