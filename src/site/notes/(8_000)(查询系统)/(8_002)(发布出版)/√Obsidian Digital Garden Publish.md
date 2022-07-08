@@ -1,5 +1,5 @@
 ---
-{"dg-home":true,"dg-publish":true,"permalink":"/8-000/8-002/obsidian-digital-garden-publish/","tags":"gardenEntry","dgHomeLink":true,"dgPassFrontmatter":true}
+{"dg-publish":true,"permalink":"/8-000/8-002/obsidian-digital-garden-publish/","tags":"gardenEntry","dgHomeLink":true,"dgPassFrontmatter":false}
 ---
 
 
@@ -54,6 +54,7 @@
 ## <mark style="background: #008B8B;">10.回顾系统</mark>
 + [(20220620)-(知识管理)-(777)-(方法)-(去消化而非摄入)](https://obsius.site/0r6n4s362t3s2b5x103e)——<mark style="background: #FF5582A6;">首次</mark>
 + [(20220614)-(知识管理)-(777)-(方法)-(我是这样进行知识管理的)](https://obsius.site/222o5h3m6b715g664a5b)
++ [[(2_021)(原子熔炼)/√(20220708)-(语句学习)-(000)-(NP)-(MERGE语句的性能问题)]]
 
 
 
@@ -73,5 +74,5 @@
 
 
 ```SQL
-NULL
+NULLNULL
 ```
