@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"ALIASES":["FIELD ASSEMBLIES SYSTEM"],"TITLES":["FIELD ASSEMBLIES SYSTEM"],"SERIES":[],"TAGS":[],"量子榜单":[],"硬件归属":[],"提需求方":[],"实现人员":[],"创建时间":[],"功能实现":[],"关联功能":[],"修改人员":[],"修改时间":[],"permalink":"/8-000/8-002/field-assemblies-system/","dgHomeLink":true,"dgPassFrontmatter":true}
+{"dg-publish":true,"permalink":"/8-000/8-002/field-assemblies-system/","dgHomeLink":true,"dgPassFrontmatter":false}
 ---
 
 
