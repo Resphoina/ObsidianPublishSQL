@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/8-000/8-002/labelling-system/","dgHomeLink":true,"dgPassFrontmatter":true}
+{"dg-publish":true,"permalink":"/8-000/8-002/labelling-system/","dgHomeLink":true,"dgPassFrontmatter":false}
 ---
 
 
