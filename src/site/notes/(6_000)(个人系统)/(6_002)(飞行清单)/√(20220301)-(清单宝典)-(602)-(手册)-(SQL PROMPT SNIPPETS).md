@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"ALIASES":["SQL PROMPT SNIPPETS"],"TITLES":["SQL PROMPT SNIPPETS"],"TAGS":["09总结复盘/0902清单宝典/SQL"],"量子榜单":[1],"任务状态":["加载"],"任务评级":[],"任务类型":[],"对接人员":[],"完成时间":[],"permalink":"/6-000/6-002/20220301-602-sql-prompt-snippets/","dgHomeLink":true,"dgPassFrontmatter":true}
+{"dg-publish":true,"permalink":"/6-000/6-002/20220301-602-sql-prompt-snippets/","dgHomeLink":true,"dgPassFrontmatter":false}
 ---
 
 
