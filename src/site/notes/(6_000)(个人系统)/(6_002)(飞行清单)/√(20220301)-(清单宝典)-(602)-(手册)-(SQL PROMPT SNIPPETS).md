@@ -552,6 +552,221 @@ ORDER BY run_date DESC, run_time DESC;
 
 <hr style="border:2px solid DeepSkyBlue"> </hr>
 
+### 在跑脚本——MSYS_RUNNING
+#### 新版本——20220720
+```SQL
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[在跑脚本]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[DECLARE]
+DECLARE @LOGIN_NAME NVARCHAR(MAX);
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[SET]
+SET @LOGIN_NAME = N'';
+SELECT u.USERNAME,
+       p.SESSION_ID, /*p.[HOST_NAME],*/ p.[PROGRAM_NAME], /*p.CLIENT_INTERFACE_NAME,*/ p.LOGIN_NAME, p.LOGIN_TIME, /*p.NT_DOMAIN,*/ /*p.NT_USER_NAME,*/
+       c.DATABASENAME, /*c.OBJNAME,*/ c.QUERY,
+       b.CLIENT_NET_ADDRESS,
+       a.START_TIME AS '开始时间', a.SESSION_ID, /*a.REQUEST_ID,*/ a.BLOCKING_SESSION_ID AS '阻塞ID', a.[STATUS] AS '状态', a.COMMAND AS '命令类型',
+       DB_NAME(a.database_id) AS '数据库名', a.READS AS '物理读次数', a.WRITES AS '写次数', a.LOGICAL_READS AS '逻辑读次数',
+       a.ROW_COUNT AS '返回结果行数', a.WAIT_TYPE AS '等待资源类型', a.WAIT_TIME AS '等待时间', a.WAIT_RESOURCE AS '等待的资源',
+       b.CLIENT_NET_ADDRESS, b.LOCAL_NET_ADDRESS
+FROM SYS.DM_EXEC_REQUESTS AS a WITH(NOLOCK)
+INNER JOIN SYS.DM_EXEC_CONNECTIONS AS b WITH(NOLOCK)
+ON a.session_id = b.session_id
+INNER JOIN SYS.DM_EXEC_SESSIONS AS p WITH(NOLOCK)
+ON b.session_id = p.session_id
+LEFT OUTER JOIN .dbo.user_dept_detail AS u WITH(NOLOCK)
+ON (CASE WHEN CHARINDEX('_', p.LOGIN_NAME, 1) > 0 THEN LEFT(p.LOGIN_NAME, LEN(p.LOGIN_NAME) - 3) ELSE p.LOGIN_NAME END) = u.userid
+CROSS APPLY(SELECT DB_NAME(DBID) AS DATABASENAME,
+                   OBJECT_ID(OBJECTID) AS OBJNAME,
+                   ISNULL((SELECT TEXT AS [processing-instruction(definition)]
+                           FROM SYS.DM_EXEC_SQL_TEXT(b.MOST_RECENT_SQL_HANDLE)
+                           FOR XML PATH(''), TYPE), '') AS QUERY
+            FROM SYS.DM_EXEC_SQL_TEXT(b.MOST_RECENT_SQL_HANDLE)) c
+WHERE a.SESSION_ID <> @@SPID
+AND   a.SESSION_ID > 50
+AND   (CASE WHEN LEN(@LOGIN_NAME) > 0 THEN @LOGIN_NAME ELSE p.LOGIN_NAME END) = p.LOGIN_NAME
+SET NOEXEC ON
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[24小时内执行过的脚本]
+GOTO MRX_SKIP;
+SELECT a.last_execution_time AS TimeExecute, b.[text] AS Script
+FROM SYS.DM_EXEC_QUERY_STATS AS a WITH(NOLOCK)
+CROSS APPLY SYS.DM_EXEC_SQL_TEXT(a.sql_handle) AS b
+ORDER BY a.last_execution_time DESC;
+MRX_SKIP:
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[详细查询]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[当前使用库名]
+/*EXEC zhh_useractive--查询运行中的脚本
+EXEC zhh_system_sql--查询运行中的脚本*/
+DECLARE @dbname VARCHAR(200);
+SELECT @dbname = [name]
+FROM master.dbo.sysdatabases WITH(NOLOCK)
+WHERE EXISTS(SELECT * FROM master.dbo.sysprocesses WITH(NOLOCK)
+             WHERE SPID = @@SPID
+             AND sysprocesses.dbid = sysdatabases.dbid);
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[061]
+IF @dbname = 'odsdb'
+BEGIN
+     SELECT DISTINCT u.username, p.hostname, p.loginame, b.client_net_address,
+            a.start_time AS '开始时间', a.session_id, a.request_id, a.blocking_session_id AS '正在阻塞其他会话的会话ID',
+            a.[status] AS '状态', a.command AS '命令', DB_NAME(a.database_id) AS '数据库名',
+            a.reads AS '物理读次数', a.writes AS '写次数', a.logical_reads AS '逻辑读次数', a.row_count AS '返回结果行数',
+            a.wait_type AS '等待资源类型', a.wait_time AS '等待时间', wait_resource AS '等待的资源',
+            (SELECT TOP 1 [text] FROM sys.dm_exec_sql_text(a.sql_handle) ) AS 'sql语句'
+     FROM sys.[dm_exec_requests] AS a WITH(NOLOCK)
+     INNER JOIN sys.dm_exec_connections AS b WITH(NOLOCK)
+     ON a.session_id = b.session_id
+     LEFT OUTER JOIN master.dbo.sysprocesses AS p WITH(NOLOCK)
+     ON b.session_id = p.spid
+     LEFT OUTER JOIN odsdb.dbo.user_dept_detail AS u WITH(NOLOCK)
+     ON p.loginame = u.userid
+     WHERE a.session_id > 50
+     ORDER BY [logical_reads] DESC;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[161]
+IF @dbname = 'odsdb_basic'
+BEGIN
+     SELECT DISTINCT CASE WHEN u.username IS NULL THEN z.LoginName ELSE u.username END AS username,
+            p.hostname, p.loginame, b.client_net_address,
+            a.start_time AS '开始时间', a.session_id, a.request_id, a.blocking_session_id AS '正在阻塞其他会话的会话ID',
+            a.[status] AS '状态', a.command AS '命令', DB_NAME(a.database_id) AS '数据库名',
+            a.reads AS '物理读次数', a.writes AS '写次数', a.logical_reads AS '逻辑读次数', a.row_count AS '返回结果行数',
+            a.wait_type AS '等待资源类型', a.wait_time AS '等待时间', wait_resource AS '等待的资源',
+            (SELECT TOP 1 [text] FROM sys.dm_exec_sql_text(a.sql_handle) ) AS 'sql语句'
+     FROM sys.[dm_exec_requests] AS a WITH(NOLOCK)
+     INNER JOIN sys.dm_exec_connections AS b WITH(NOLOCK)
+     ON a.session_id = b.session_id
+     LEFT OUTER JOIN master.dbo.sysprocesses AS p WITH(NOLOCK)
+     ON b.session_id = p.spid
+     LEFT OUTER JOIN odsdb_basic.dbo.user_dept_detail AS u WITH(NOLOCK)
+     ON (CASE WHEN CHARINDEX('_', p.loginame, 1) > 0 THEN LEFT(p.loginame, LEN(p.loginame) - 3) ELSE p.loginame END) = u.userid
+     LEFT OUTER JOIN odsdb_basic.dbo.xhq_bi_ip_address AS z WITH(NOLOCK)
+     ON b.client_net_address = z.IpAddress
+     WHERE a.session_id > 50
+     ORDER BY [logical_reads] DESC;
+END
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[备用脚本_1]
+SELECT a.scheduler_id, a.[status], a.session_id, a.blocking_session_id, a.reads, a.writes, a.logical_reads,
+       a.start_time, a.cpu_time, a.total_elapsed_time AS '执行总时间', d.[name] AS dbname,
+       SUBSTRING(LTRIM(b.[text]), a.statement_start_offset / 2 + 1,
+                 (CASE WHEN a.statement_end_offset = -1 THEN LEN(CONVERT(NVARCHAR(MAX), b.[text])) * 2 ELSE a.statement_end_offset END
+                  - a.statement_start_offset) / 2) AS [正在执行代码],
+       b.[text] AS [脚本全部代码]
+FROM sys.dm_exec_requests AS a WITH(NOLOCK)
+CROSS APPLY sys.dm_exec_sql_text(sql_handle) AS b
+LEFT OUTER JOIN sys.databases AS d WITH(NOLOCK)
+ON a.database_id = d.database_id
+WHERE a.session_id > 50
+AND a.session_id <> @@SPID
+ORDER BY a.total_elapsed_time DESC;
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[备用脚本_2]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[DECLARE]
+DECLARE @LOGIN_NAME_BAK NVARCHAR(MAX);
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[SET]
+SET @LOGIN_NAME_BAK = N'103922';
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[EXEC]
+SELECT c.DATABASENAME,
+       a.SESSION_ID,
+       a.[HOST_NAME],
+       a.[PROGRAM_NAME],
+       a.CLIENT_INTERFACE_NAME,
+       a.LOGIN_NAME,
+       a.LOGIN_TIME,
+       a.NT_DOMAIN,
+       a.NT_USER_NAME,
+       b.CLIENT_NET_ADDRESS,
+       b.LOCAL_NET_ADDRESS,
+       c.OBJNAME,
+       c.QUERY
+FROM SYS.DM_EXEC_SESSIONS AS a
+INNER JOIN SYS.DM_EXEC_CONNECTIONS AS b
+ON b.SESSION_ID = a.SESSION_ID
+CROSS APPLY(SELECT DB_NAME(DBID) AS DATABASENAME,
+                   OBJECT_ID(OBJECTID) AS OBJNAME,
+                   ISNULL((SELECT TEXT AS [processing-instruction(definition)]
+                           FROM SYS.DM_EXEC_SQL_TEXT(b.MOST_RECENT_SQL_HANDLE)
+                           FOR XML PATH(''), TYPE), '') AS QUERY
+            FROM SYS.DM_EXEC_SQL_TEXT(b.MOST_RECENT_SQL_HANDLE)) c
+WHERE a.SESSION_ID <> @@SPID
+AND   a.LOGIN_NAME = @LOGIN_NAME_BAK;
+SET NOEXEC OFF;
+```
+
+#### 老版本——20220720
+```SQL
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[24小时内执行过的脚本]
+GOTO MRX_SKIP;
+SELECT a.last_execution_time AS TimeExecute, b.[text] AS Script
+FROM SYS.DM_EXEC_QUERY_STATS AS a WITH(NOLOCK)
+CROSS APPLY SYS.DM_EXEC_SQL_TEXT(a.sql_handle) AS b
+ORDER BY a.last_execution_time DESC;
+MRX_SKIP:
+--↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[详细查询]
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[当前使用库名]
+/*EXEC zhh_useractive--查询运行中的脚本
+EXEC zhh_system_sql--查询运行中的脚本*/
+DECLARE @dbname VARCHAR(200);
+SELECT @dbname = [name]
+FROM master.dbo.sysdatabases WITH(NOLOCK)
+WHERE EXISTS (SELECT * FROM master.dbo.sysprocesses WITH(NOLOCK)
+              WHERE spid = @@SPID AND sysprocesses.dbid = sysdatabases.dbid);
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[061]
+IF @dbname = 'odsdb'
+BEGIN
+     SELECT DISTINCT u.username, p.hostname, p.loginame, b.client_net_address,
+            a.start_time AS '开始时间', a.session_id, a.request_id, a.blocking_session_id AS '正在阻塞其他会话的会话ID',
+            a.[status] AS '状态', a.command AS '命令', DB_NAME(a.database_id) AS '数据库名',
+            a.reads AS '物理读次数', a.writes AS '写次数', a.logical_reads AS '逻辑读次数', a.row_count AS '返回结果行数',
+            a.wait_type AS '等待资源类型', a.wait_time AS '等待时间', wait_resource AS '等待的资源',
+            (SELECT TOP 1 [text] FROM sys.dm_exec_sql_text(a.sql_handle) ) AS 'sql语句'
+     FROM sys.[dm_exec_requests] AS a WITH(NOLOCK)
+     INNER JOIN sys.dm_exec_connections AS b WITH(NOLOCK)
+     ON a.session_id = b.session_id
+     LEFT OUTER JOIN master.dbo.sysprocesses AS p WITH(NOLOCK)
+     ON b.session_id = p.spid
+     LEFT OUTER JOIN odsdb.dbo.user_dept_detail AS u WITH(NOLOCK)
+     ON p.loginame = u.userid
+     WHERE a.session_id > 50
+     ORDER BY [logical_reads] DESC;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[161]
+IF @dbname = 'odsdb_basic'
+BEGIN
+     SELECT DISTINCT CASE WHEN u.username IS NULL THEN z.LoginName ELSE u.username END AS username,
+            p.hostname, p.loginame, b.client_net_address,
+            a.start_time AS '开始时间', a.session_id, a.request_id, a.blocking_session_id AS '正在阻塞其他会话的会话ID',
+            a.[status] AS '状态', a.command AS '命令', DB_NAME(a.database_id) AS '数据库名',
+            a.reads AS '物理读次数', a.writes AS '写次数', a.logical_reads AS '逻辑读次数', a.row_count AS '返回结果行数',
+            a.wait_type AS '等待资源类型', a.wait_time AS '等待时间', wait_resource AS '等待的资源',
+            (SELECT TOP 1 [text] FROM sys.dm_exec_sql_text(a.sql_handle) ) AS 'sql语句'
+     FROM sys.[dm_exec_requests] AS a WITH(NOLOCK)
+     INNER JOIN sys.dm_exec_connections AS b WITH(NOLOCK)
+     ON a.session_id = b.session_id
+     LEFT OUTER JOIN master.dbo.sysprocesses AS p WITH(NOLOCK)
+     ON b.session_id = p.spid
+     LEFT OUTER JOIN odsdb_basic.dbo.user_dept_detail AS u WITH(NOLOCK)
+     ON (CASE WHEN CHARINDEX('_', p.loginame, 1) > 0 THEN LEFT(p.loginame, LEN(p.loginame) - 3) ELSE p.loginame END) = u.userid
+     LEFT OUTER JOIN odsdb_basic.dbo.xhq_bi_ip_address AS z WITH(NOLOCK)
+     ON b.client_net_address = z.IpAddress
+     WHERE a.session_id > 50
+     ORDER BY [logical_reads] DESC;
+END
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[备用脚本]
+SELECT a.scheduler_id, a.[status], a.session_id, a.blocking_session_id, a.reads, a.writes, a.logical_reads,
+       a.start_time, a.cpu_time, a.total_elapsed_time AS '执行总时间', d.[name] AS dbname,
+       SUBSTRING(LTRIM(b.[text]), a.statement_start_offset / 2 + 1,
+                 (CASE WHEN a.statement_end_offset = -1 THEN LEN(CONVERT(NVARCHAR(MAX), b.[text])) * 2 ELSE a.statement_end_offset END
+                  - a.statement_start_offset) / 2) AS [正在执行代码],
+       b.[text] AS [脚本全部代码]
+FROM sys.dm_exec_requests AS a WITH(NOLOCK)
+CROSS APPLY sys.dm_exec_sql_text(sql_handle) AS b
+LEFT OUTER JOIN sys.databases AS d WITH(NOLOCK)
+ON a.database_id = d.database_id
+WHERE a.session_id > 50
+AND a.session_id <> @@SPID
+ORDER BY a.total_elapsed_time DESC;
+```
+
+<hr style="border:2px solid DeepSkyBlue"> </hr>
+
 ### 在跑作业——MSYS_job_running
 #### 方案一—20220402
 ```SQL
