@@ -23,6 +23,10 @@ where contains(TITLES, "GS1项目合作计划书-Business Plan")
 #### a.新品引进流程图
 ![新品引进流程图](https://raw.githubusercontent.com/resphoina/MDPIC/master/markdown2022-08-10-1753-MD-项目管理-GS1-新品引进流程图.jpg)
 
+![审核流程图001](https://raw.githubusercontent.com/resphoina/MDPIC/master/markdown2022-08-10-1753-MD-项目管理-GS1-新品引进流程图001.jpg)
+
+![审核流程图002](https://raw.githubusercontent.com/resphoina/MDPIC/master/markdown2022-08-10-1753-MD-项目管理-GS1-新品引进流程图002.jpg)
+
 #### b.新品流程发起资料填写指引
 + 1-供应商、商品资料填写指引
     + 前往<strong><font color=#E6E022>供应链数字化平台</font></strong>→我的申请→新品推荐
@@ -104,8 +108,5 @@ where contains(TITLES, "GS1项目合作计划书-Business Plan")
 
 
 ```SQL
-
-
-
 
 ```
