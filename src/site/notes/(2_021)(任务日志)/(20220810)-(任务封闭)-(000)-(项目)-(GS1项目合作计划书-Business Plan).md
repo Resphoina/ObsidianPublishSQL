@@ -13,7 +13,7 @@ where contains(TITLES, "GS1项目合作计划书-Business Plan")
 ```toc
 ```
 
-## 01.供应商合作平台
+## 01.供应商合作平台-商品经营
 >[!attention] 登录信息
 >网址：https://scm.myj.com.cn/index_New.aspx
 >账号：769000
@@ -75,9 +75,31 @@ where contains(TITLES, "GS1项目合作计划书-Business Plan")
         + 包装规格：<strong><font color=#70f3ff>指包含在包装内的商品数量，只能填写数值</font></strong>
         + 配货单位：<strong><font color=#70f3ff>指配送到店的最低数量，只能填写数值</font></strong>
 + 新品引进进度查询
+    + 问题一：<strong><font color=#70f3ff>如何查询我的新品引进进度？</font></strong>
+    + 问题二：<strong><font color=#70f3ff>成功转经销的商品哪里查？</font></strong>
+    + 问题三：<strong><font color=#70f3ff>引进失败的商品哪里查？</font></strong>
 + 新品上架、销售情况查询
 
-新品上架和销售情况查询
+### 0102.新品引进资质要求
++ <strong><font color=#FF4500>供应商需提供的资料</font></strong>
+    + 新品样板
+    + 新品报价单
+    + 资质证明
+    + 其他
+    + ![](https://raw.githubusercontent.com/resphoina/MDPIC/master/markdown2022-08-10-1753-MD-项目管理-GS1-新品引进资质要求.jpg)
++ <strong><font color=#FF4500>新品引进流程发起操作指引</font></strong>
+    + 新品引进流程图
+    + 新品资料填写指引
+    + 新品上架和销售情况查询
+
+## 02.供应商合作平台-营销推广
+![活动协议类型](https://raw.githubusercontent.com/resphoina/MDPIC/master/markdown2022-08-10-1753-MD-项目管理-GS1-活动协议类型.jpg)
+
++ <strong><font color=#FF4500>营销类型介绍</font></strong>
+    + ![营销类型](https://raw.githubusercontent.com/resphoina/MDPIC/master/markdown2022-08-10-1753-MD-项目管理-GS1-营销类型.jpg)
+    + ![营销类型配图说明](https://raw.githubusercontent.com/resphoina/MDPIC/master/markdown2022-08-10-1753-MD-项目管理-GS1-营销类型配图说明.jpg)
++ <strong><font color=#FF4500>营销活动提报流程</font></strong>
++ <strong><font color=#FF4500>活动协议签订规则</font></strong>
 
 
 
