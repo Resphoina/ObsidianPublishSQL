@@ -940,6 +940,23 @@ WHERE a.start_time >= DATEADD(HOUR, -24, CURRENT_TIMESTAMP);
 
 <hr style="border:2px solid DeepSkyBlue"> </hr>
 
+### 性能监控——MSYS_WEB
+```SQL
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[监控页面]
+--061--http://zabbix.myj.com.cn/zabbix.php?action=charts.view&view_as=showgraph&filter_hostids%5B%5D=10167&filter_set=1
+--161--http://zabbix.myj.com.cn/zabbix.php?action=charts.view&view_as=showgraph&filter_hostids%5B%5D=10537&filter_set=1
+--162--http://zabbix.myj.com.cn/zabbix.php?action=charts.view&view_as=showgraph&filter_hostids%5B%5D=10538&filter_set=1
+--167--http://zabbix.myj.com.cn/zabbix.php?action=charts.view&view_as=showgraph&filter_hostids%5B%5D=10575&filter_set=1
+--064--http://zabbix.myj.com.cn/zabbix.php?action=charts.view&view_as=showgraph&filter_hostids%5B%5D=10923&filter_set=1
+--065--http://zabbix.myj.com.cn/zabbix.php?action=charts.view&view_as=showgraph&filter_hostids%5B%5D=10924&filter_set=1
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[SQL MONITOR]
+--账号: Read-only user
+--密码: Read@2021
+--http://sql.myj.lan/overviews/192.168.5.37/cluster/192.168.0.61/sql/(local)#?MaxTime=1660546210121&Alert=1025547&Zoom=1660508836893%2C1660516079000
+```
+
+<hr style="border:2px solid DeepSkyBlue"> </hr>
+
 ### 性能监控——MSYS_PS
 ```SQL
 --PS_CPU-监控服务器概况↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨[[1|1]]
