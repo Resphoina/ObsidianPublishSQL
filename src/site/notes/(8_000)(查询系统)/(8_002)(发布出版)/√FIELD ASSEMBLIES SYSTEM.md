@@ -62,10 +62,47 @@ where contains(TITLES, "FIELD ASSEMBLIES SYSTEM")
 4. 服务对象:
 5. 保存时间:
 
+## 20220817——批量授予非管理员作业权限
+1. 禁用作业
+    1. `[(00)(徐海权)【仓库管理】【权限监控】作业权限开通回收(每20分钟)-【RX】]`
+2. 执行作业
+    1. `[(00)(徐海权)【仓库管理】【作业监控】作业基础信息扫描(0420|1320|1515)-【RX】]`
+    2. 找到作业——[[#脚本代码-找到作业]]
+    3. 脚本启动
+        1. `EXEC msdb.dbo.sp_start_job @JOB_ID = '2C04C6C8-E90E-46C7-A9F2-E9F466D7E119';`
+3. 回收作业权限
+    1. `USE odsdbfq; EXEC p_sysjob_access 0, 0, 'sa';/*回收*/`
+4. 插入需要授予明细——[[#脚本代码-插入需要授予明细]]
+5. 执行作业
+    1. `USE odsdbfq; EXEC p_sysjob_access 1, 0, 'sa';/*执行*/`
 
+### 脚本代码-找到作业
+```SQL
+SELECT JOB_ID
+FROM dbo.MRX_SYSJOBS_INFO WITH(NOLOCK)
+WHERE CHARINDEX('作业基础信息扫描', JOBNAME, 1) > 1;
+```
 
-
-
+### 脚本代码-插入需要授予明细
+```SQL
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[插入需要授予明细]
+INSERT INTO odsdbfqbi.dbo.job_update_insert(ZhangHao, ZuoYeMingCheng)
+SELECT b.userid,
+       a.name
+FROM dbo.XTB_sysjobs_owner_output AS a WITH(NOLOCK)
+INNER JOIN dbo.user_dept_detail   AS b WITH(NOLOCK)
+ON b.username = a.job_owner
+WHERE b.stat = '在职'
+AND   ISNULL(b.dept4, '') != '信息总部'
+AND   b.dept3 != '信息总部'
+AND (b.position  LIKE '%分析%' OR b.position  LIKE '%IT%' OR b.position  LIKE '%系统%')
+ORDER BY JOB_OWNER;
+--⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[确认查阅授予明细]
+SELECT ZhangHao, ZuoYeMingCheng, ZuoYeID, DealStatus, UPDATETIME
+FROM odsdbfqbi.dbo.job_update_insert WITH(NOLOCK)
+WHERE UPDATETIME >= CONVERT(CHAR(8), CURRENT_TIMESTAMP, 112)
+ORDER BY UPDATETIME DESC;
+```
 
 ```SQL
 月度经营分析
