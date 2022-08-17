@@ -16,7 +16,10 @@
 + <strong><font color=#FF0000>关键成绩</font></strong>——[[(8_000)(查询系统)/(8_002)(发布出版)/√KEY CONTRIBUTIONS|KEY CONTRIBUTIONS]]
 
 ### 0201.信息查询
++ 拾人牙慧——[[(8_000)(查询系统)/(8_002)(发布出版)/√PICK UP OTHERS|PICK UP OTHERS]]
++ <strong><font color=#00FF00>中枢工具</font></strong>——[[(2_021)(单表标注)/√(20211211)-(单表标注)-(000)-(数仓)-(XTB_PARM_WAREHOUSE-参数调用中枢表)|XTB_PARM_WAREHOUSE]]
 + MPS——[[(2_021)(单表标注)/√(20220525)-(生产源表)-(000)-(物流)-(DATABASE_178-MPS主生产计划)|DATABASE_178-MPS主生产计划]]
++ 加盟平台——[[(2_021)(单表标注)/√(20211228)-(生产源表)-(000)-(加盟)-(DATABASE_53_20081-加盟平台)|DATABASE_53_20081-加盟平台]]
 
 ### 0202.数据质量
 
