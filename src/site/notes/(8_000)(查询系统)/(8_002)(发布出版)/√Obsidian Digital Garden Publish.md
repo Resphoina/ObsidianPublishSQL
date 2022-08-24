@@ -78,5 +78,5 @@
 
 
 ```SQL
-NULLNULL
+NULL
 ```
