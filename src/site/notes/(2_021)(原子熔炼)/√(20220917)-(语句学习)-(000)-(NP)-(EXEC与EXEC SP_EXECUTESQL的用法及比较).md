@@ -13,7 +13,7 @@ where contains(TITLES, "")
 ```
 
 ```dataview
-table without id 萃取重点, 萃取难点, 萃取锚点, 萃取输出
+table without id 萃取重点
 where contains(TITLES, "EXEC与EXEC SP_EXECUTESQL的用法及比较")
 ```
 
@@ -218,84 +218,93 @@ SET @Sql = 'SELECT * FROM Person.Person WHERE FirstName = @FName ORDER BY Busine
 EXEC sp_executesql @Sql, N'@FName varchar(20)', @FName
 ```
 
-
-
-
-
-
-
-
+## 03.EXEC和SP_EXECUTESQL使用介绍
+>[!background] 背景介绍
+>EXEC命令有两种用法，一种是<strong><font color=#E6E022>执行一个存储过程</font></strong>，另一种是<strong><font color=#E6E022>执行一个动态的批处理</font></strong>。以下所讲的都是第二种用法。
 
 ```SQL
+DECLARE @TableName VARCHAR(50), @Sql NVARCHAR(MAX), @OrderID INT;
+SET @TableName = 'Orders';
+SET @OrderID = 10251;
+SET @Sql = 'SELECT * FROM ' + QUOTENAME(@TableName) + 'WHERE OrderID = ' + CAST(@OrderID AS VARCHAR(10)) + ' ORDER BY ORDERID DESC'
+--PRINT @Sql
+--EXEC(@Sql)
+```
 
+>[!attention] 注意事项
+>注：这里的EXEC括号中只允许包含一个字符串变量，但是可以串联多个变量，如果我们这样写EXEC，SQL编译器就会报错，编译不通过。
+```SQL
+PRINT(('SELECT TOP('+ CAST(@TopCount ASVARCHAR(10)) +')* FROM '+QUOTENAME(@TableName)+' ORDER BY ORDERID DESC'))
+EXEC('SELECT TOP('+ CAST(@TopCount ASVARCHAR(10)) +')* FROM '+QUOTENAME(@TableName)+' ORDER BY ORDERID DESC');
+```
 
-EXEC('declare @cnt int; select @cnt=count(1) from Person.Person')
-PRINT @cnt--无法访问 exec 里取到的@cnt的值
---[1.3.1]======================
-SET @sql = 'select @cnt=count(1) from Person.Person'
-EXEC sp_executesql @sql, N'@cnt int output', @cnt OUTPUT --
-PRINT @cnt
---[1.4]==============================================insert into exec/exec sp_executesql 的使用
-DECLARE @tmp TABLE
-(
-BusinessEntityID INT,
-FirstName VARCHAR(50),
-LastName VARCHAR(50)
-)
-INSERT INTO @tmp EXEC sp_executesql N'select top 10 BusinessEntityID, FirstName, LastName from Person.Person'
-INSERT INTO @tmp EXEC(N'select top 10 BusinessEntityID, FirstName, LastName from Person.Person')
-SELECT * FROM @tmp
---[2]==============================================================================================exec 与 exec sp_executesql 比较
---[2.1]==============================================
---1. exec 与 exec sp_executesql 都可以用于执行动态sql
---2. sp_executesql 后面需要直接使用表示拼接后的sql的变量或者sql常量字符串，后面不能直接使用常量+变量拼接的语句
-/*
-如下面的语句会报错
-DECLARE @FName2 VARCHAR(20) = 'Ken', @PeronType VARCHAR(10) = 'GC', @sql NVARCHAR(1000);
-EXEC sp_executesql 'select * from Person.Person where FirstName =''' + @FName2 + ''' and PersonType= ''' + @PeronType + ''''
-这种情况下，需要先将sql拼凑后的结果放入一个变量中，然后使用 exec sp_executesql 执行；或者使用入参的方式来实现。
-推荐使用下面的方式：
-DECLARE @FName2 VARCHAR(20) = 'Ken', @PeronType VARCHAR(10) = 'GC', @sql NVARCHAR(1000);
-SET @sql = 'select * from Person.Person where FirstName = @FName2 and PersonType = @PeronType'
-EXEC sp_executesql @sql, N'@FName varchar(20), @PersonType varchar(10)', @FName2, @PeronType
-*/
---3. sp_executesql要求动态Sql和动态Sql参数列表必须是Nvarchar, 动态Sql的参数列表与外部提供值的参数列表顺序必需一致，且不能使用变量。
---4. exec 查询不能使用sql外面定义的变量，查询的结果也不容易进行使用。而exec sp_executesql 可以使用入参和出参的方式很方便的获取或者返回内容。
---5. sp_executesql可以建立带参数的查询字符串还可以重用执行计划。通过下面的示例来了解一下
-/*
-首先是 EXEC(通过上面的截图可以看到，执行三次生成了三次执行计划)
+>[!attention] 正确用法
+>如果我们这样编译器就会通过。<br/>
+>所以<strong><font color=#E6E022>最佳的做法是把代码构造到一个变量中，然后再把该变量作为EXEC命令的输入参数，这样就不会受限制了。</font></strong>
+```SQL
+EXEC(@sql+@sql2+@sql3);
+```
 
-DBCC FREEPROCCACHE -- 清空执行计划缓存
+### 0301.EXEC不提供接口
++ 这里的接口是指它不能执行一个包含一个带变量符的批处理。
++ 使用EXEC时，如果您想访问变量，必须把变量内容串联到动态构建的代码字符串中。
++ `萃取重点`:: <strong><font color=#9966CC>串联变量的内容也存在性能方面的弊端。SQL SERVER为每一个的查询字符串创建新的执行计划，即使查询模式相同也是这样。</font></strong><sub><mark style="background: #FF5582A6;">★★★★★</mark> </sub>
++ `萃取重点`:: <strong><font color=#9966CC>EXEC除了不支持动态批处理中的输入参数外，他也不支持输出参数。</font></strong>
+    + 默认情况下，EXEC把查询的输出返回给调用者。
+    + `萃取重点`:: 如果你要把输出返回给调用批处理中的变量，事情就没有那么简单了。<strong><font color=#FF0000>你必须使用INSERT EXEC语法把输出插入到一个目标表中，然后从这表中获取值后赋给该变量。</font></strong>
 
-DECLARE @Sql NVARCHAR(MAX), @ID INT;
-SET @ID = 15; -- 15使用之后，换成10， 12等再次执行
-SET @Sql = 'SELECT * FROM Person.Person WHERE BusinessEntityID = ' + CAST(@ID AS VARCHAR(10)) + ' ORDER BY BusinessEntityID DESC'
-EXEC(@Sql);
+```SQL
+SET @Sql = 'SELECT * FROM ' + QUOTENAME(@TableName) + 'WHERE OrderID = ' + CAST(@OrderID AS VARCHAR(10)) + 'ORDER BY ORDERID DESC'
+```
 
-SELECT cacheobjtype, objtype, usecounts, sql
-FROM sys.syscacheobjects
-WHERE sql NOT LIKE '%cach%'
-AND sql NOT LIKE '%sys.%'
-*/
-/*
-通过上面的截图可以看到，只生成了一次执行计划。
-DBCC FREEPROCCACHE
+```SQL
+DECLARE @sql NVARCHAR(MAX), @RecordCount INT
+SET @sql = 'SELECT COUNT (ORDERID) FROM Orders';
 
-DECLARE @Sql NVARCHAR(MAX), @ID INT;
+CREATE TABLE #T (TID INT);
 
-SET @ID = 17;
-SET @Sql = 'SELECT * FROM Person.Person WHERE BusinessEntityID = @ID ORDER BY BusinessEntityID DESC'
+INSERT INTO #T EXEC(@sql);
+SET @RecordCount = (SELECT TID FROM #T)
+SELECT @RecordCount
+DROP TABLE #T
+```
 
-EXEC sp_executesql @Sql, N'@ID int', @ID
+### 0302.SP_EXECUTESQL的使用
+>[!attention] 注意事项
+>`萃取重点`:: SP_EXECUTESQL命令在SQL SERVER中引入的比EXEC命令晚一些，它主要<strong><font color=#E6E022>为重用执行计划提供更好的支持</font></strong>。
 
-SELECT cacheobjtype, objtype, usecounts, sql
-FROM sys.syscacheobjects
-WHERE sql NOT LIKE '%cach%'
-AND sql NOT LIKE '%sys.%'
-*/
---6.sp_executesql可以建立带参数的查询字符串可以防止sql注入
-/*
+```SQL
+DECLARE @TableName VARCHAR(50), @sql NVARCHAR(MAX), @OrderID INT, @sql2 NVARCHAR(MAX);
+SET @TableName = 'Orders ';
+SET @OrderID = 10251;
+SET @sql = 'SELECT * FROM ' + QUOTENAME(@TableName) + ' WHERE OrderID = ' + CAST(@OrderID AS VARCHAR(50)) + ' ORDER BY ORDERIDDESC'
+PRINT @sql
+EXEC sp_executesql @sql
+```
 
-*/
+>[!summary] SP_EXECUTESQL优势
++ SP_EXECUTESQL提供接口
++ `萃取重点`:: SP_EXECUTESQL命令比EXEC命令更灵活，因为它提供一个接口，<strong><font color=#E6E022>该接口及支持输入参数也支持输出参数</font></strong>。
++ `萃取重点`:: 这功能使你可以创建带参数的查询字符串，这样就可以比EXEC更好的重用执行计划，<strong><font color=#E6E022>SP_EXECUTESQL的构成与存储过程非常相似，不同之处在于你是动态构建代码</font></strong>。它的构成包括：<strong><font color=#FF4500>代码块</font></strong>，<strong><font color=#FF4500>参数声明部分</font></strong>，<strong><font color=#FF4500>参数赋值部分</font></strong>。
+    + `EXEC SP_EXECUTESQL`
+    + `萃取重点`:: `@STMT = <STATEMENT>--类似存储过程主体`：@STMT参数是输入的动态批处理，它可以引入输入参数或输出参数，和存储过程的主体语句一样，只不过它是动态的，而存储过程是静态的，不过你也可以在存储过程中使用SP_EXECUTESQL;
+    + `萃取重点`:: `@PARAMS = <PARAMS>--类似存储过程参数部分`：@PARAMS参数与定义输入/输出参数的存储过程头类似，实际上和存储过程头的语法完全一样；
+    + `<PARAMS ASSIGNMENT>--类似存储过程调用`：`@<PARAMS ASSIGNMENT>与调用存储过程的EXEC部分类似。`
++ `萃取重点`:: SQ_EXECUTESQL的另一个与其接口有关的强大功能是，你可以<strong><font color=#FF0000>使用输出参数为调用批处理中的变量返回值</font></strong>。利用该功能可以<strong><font color=#E6E022>避免用临时表返回数据</font></strong>，从而得到更高效的代码和更少的重新编译。<strong><font color=#E6E022>定义和使用输出参数的语法与存储过程类似。也就是说你需要在声明参数时指定OUTPUT子句。</font></strong>
 
+```SQL
+DECLARE @TableName VARCHAR(50), @sql NVARCHAR(MAX), @OrderID INT;
+SET @TableName = 'Orders ';
+SET @OrderID = 10251;
+SET @sql = 'SELECT * FROM ' + QUOTENAME(@TableName) + ' WHERE OrderID = @OID ORDER BY ORDERID DESC'
+EXEC sp_executesql @stmt = @sql, @params = N'@OID AS INT ', @OID = @OrderID
+```
+
+>[!example] 用法案例
+>例如下面的静态代码简单的演示了如何从动态批处理中利用输出参数@p把值返回到外部批处理中的变量@i。
+```SQL
+DECLARE @sql AS NVARCHAR(12), @i AS INT;
+SET @sql = N' SET @p = 10';
+EXEC sp_executesql @stmt = @sql, @params = N'@p AS INT OUTPUT', @p = @i OUTPUT
+SELECT @i
 ```
