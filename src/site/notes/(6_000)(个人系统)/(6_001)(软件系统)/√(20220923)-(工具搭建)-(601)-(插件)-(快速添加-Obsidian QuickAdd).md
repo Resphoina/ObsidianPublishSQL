@@ -218,7 +218,7 @@ QuickAdd，有人称呼它为“<strong><font color=#FF0000>快加</font></stron
 对，又是格式语法，我们上面有演示怎么写日期时间的格式语法，现在可以把它用在你的模板文件中，就可以做到自动记录创建时间。下面是我的提案模板中yaml的写法。
 
 ```md
----
+
 title: {{NAME}}
 UID: {{DATE:YYYYMMDDHHmmss}}
 aliases: []
@@ -226,7 +226,7 @@ tags: []
 项目状态: 提案
 主题: {{VALUE:主题是什么？}}
 date: {{DATE:YYYY-MM-DD HH:mm:ss}}
----
+
 ```
 + {{NAME}}是文件名的写法
 + {{VALUE:主题是什么？}}<strong><font color=#E6E022>这种写法会作为一个提示输入弹窗，让我录入</font></strong>。
