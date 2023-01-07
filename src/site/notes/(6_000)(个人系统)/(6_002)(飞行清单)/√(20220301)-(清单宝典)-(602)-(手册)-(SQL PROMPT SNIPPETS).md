@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/6-000/6-002/20220301-602-sql-prompt-snippets/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/6-000/6-002/20220301-602-sql-prompt-snippets/"}
 ---
 
 
@@ -17,10 +17,10 @@ table without id 入榜亮点, 入榜输出
 where contains(TITLES, "")
 ```
 
-```dataview
-table without id 问题分析, 我的处理, 操作简述
-where contains(TITLES, "SQL PROMPT SNIPPETS")
-```
+| 问题分析 | 我的处理 | 操作简述 |
+| ---- | ---- | ---- |
+| \-   | \-   | \-   |
+
 
 ```toc
 ```
@@ -959,7 +959,7 @@ WHERE a.start_time >= DATEADD(HOUR, -24, CURRENT_TIMESTAMP);
 
 ### 性能监控——MSYS_PS
 ```SQL
---PS_CPU-监控服务器概况↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨[[1|1]]
+--PS_CPU-监控服务器概况↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨[[1\|1]]
 --↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[S1]
 --如果返回的是一条记录，说明服务器不支持NUMA架构，否则记录数就是NUMA架构的节点数(NUMA：非均匀访存模型)
 --Node_id：NUMA节点id
@@ -991,7 +991,7 @@ SELECT PARENT_NODE_ID AS NODE_ID,
 FROM sys.dm_os_schedulers
 WHERE status = 'VISIBLE ONLINE'
 GROUP BY PARENT_NODE_ID;
---PS_WAIT-监控进程等待时间↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨[[2|2]]
+--PS_WAIT-监控进程等待时间↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨[[2\|2]]
 --↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[S1:PREREQUISITE FUNCTION]
 SET NOEXEC ON;
 USE MASTER;
@@ -1129,7 +1129,7 @@ ON node.TASK_ADDRESS = b.TASK_ADDRESS
 CROSS APPLY sys.dm_exec_sql_text(b.sql_handle) AS sqltxt
 WHERE b.sql_handle IS NOT NULL
 AND a.WAIT_TYPE NOT IN ('WAITFOR', 'BROKER_RECEIVE_WAITFOR');
---PS_BLOCK-监控堵塞进程↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨[[3|3]]
+--PS_BLOCK-监控堵塞进程↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨[[3\|3]]
 --↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[S1:List the current blocking session information]
 --⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[FUNCTION]
 SET NOEXEC ON;
@@ -1226,7 +1226,7 @@ AND c.parent_connection_id IS NULL/*PLUS*/
 AND d.ecid = 0
 AND (DATEDIFF(SS, c.LAST_READ, GETDATE()) + DATEDIFF(SS, c.LAST_WRITE, GETDATE())) >= (@TIMELENGTH_MINUTE * 60)
 AND d.LASTWAITTYPE NOT IN('BROKER_RECEIVE_WAITFOR', 'WAITFOR');
---PS_HEAVY_QUERY-监控最耗资源进程↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨[[4|4]]
+--PS_HEAVY_QUERY-监控最耗资源进程↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨↨[[4\|4]]
 --⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[注释版]
 IF OBJECT_ID('.dbo.XTB_PS_HEAVY_QUERY', 'U') IS NOT NULL DROP TABLE dbo.XTB_PS_HEAVY_QUERY;
 SELECT ROW_NUMBER()OVER(ORDER BY CAST((a.total_worker_time) / 1000000.0 AS DECIMAL(28, 2)) DESC) AS NUM,
