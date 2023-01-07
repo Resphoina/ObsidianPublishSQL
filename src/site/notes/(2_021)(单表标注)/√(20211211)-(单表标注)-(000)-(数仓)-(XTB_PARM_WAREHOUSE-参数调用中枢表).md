@@ -1,15 +1,15 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20211211-000-xtb-parm-warehouse/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20211211-000-xtb-parm-warehouse/"}
 ---
 
 
 # <font color=#DC143C>(20211211)-(单表标注)-(000)-(数仓)-(XTB_PARM_WAREHOUSE-参数调用中枢表)</font>
 URL:: 
 
-```dataview
-table without id 萃取函数, 萃取解法
-where contains(TITLES, "参数调用中枢表")
-```
+| 萃取函数 | 萃取解法 |
+| ---- | ---- |
+| \-   | \-   |
+
 
 ```SQL
 --↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹↹[参数调用中枢表|dbo.XTB_PARM_WAREHOUSE]
