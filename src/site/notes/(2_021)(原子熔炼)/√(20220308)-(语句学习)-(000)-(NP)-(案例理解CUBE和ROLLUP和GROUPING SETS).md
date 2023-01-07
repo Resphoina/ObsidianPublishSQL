@@ -1,15 +1,15 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20220308-000-np-cube-rollup-grouping-sets/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20220308-000-np-cube-rollup-grouping-sets/"}
 ---
 
 
 # <font color=#DC143C>(20220308)-(语句学习)-(000)-(NP)-(案例理解CUBE和ROLLUP和GROUPING SETS)</font>
 URL :: [Group By in SQL Server with CUBE, ROLLUP and GROUPING SETS Examples](https://www.mssqltips.com/sqlservertip/6315/group-by-in-sql-server-with-cube-rollup-and-grouping-sets-examples/)
 
-```dataview
-table without id 入榜亮点, 入榜输出
-where contains(TITLES, "案例理解CUBE和ROLLUP和GROUPING SETS")
-```
+| 入榜亮点 | 入榜输出 |
+| ---- | ---- |
+| \-   | \-   |
+
 
 ```
 dataview
