@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20220504-000-np-tally-table/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20220504-000-np-tally-table/"}
 ---
 
 
@@ -12,10 +12,10 @@ table without id 入榜亮点, 入榜输出
 where contains(TITLES, "")
 ```
 
-```dataview
-table without id 萃取重点
-where contains(TITLES, "Tally Table——What it is and how it replaces a loop")
-```
+| 萃取重点 |
+| ---- |
+| \-   |
+
 
 ```toc
 ```
@@ -60,8 +60,8 @@ BEGIN
 END;
 --⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[Display the total duration]
 SELECT STR(DATEDIFF(ms, @StartTime, GETDATE())) + ' Milliseconds duration';
-```
-^5kz5em
+```{ #5kz5em}
+
 
 That will take about <strong><font color=#70f3ff>750 milliseconds</font></strong> to generate. Like I said, there are many ways to generate a Tally table. Let me introduce you to my favorite way and then I'll explain why it's a favorite...
 
@@ -87,8 +87,8 @@ ALTER TABLE dbo.Tally ADD CONSTRAINT PK_Tally_N PRIMARY KEY CLUSTERED(N)WITH FIL
 GRANT SELECT, REFERENCES ON dbo.Tally TO PUBLIC;
 --⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶⇶[Display the total duration]
 SELECT STR(DATEDIFF(MS, @STARTTIME, GETDATE())) + ' MILLISECONDS DURATION';
-```
-^9taie2
+```{ #9taie2}
+
 
 The first time you run it, it'll take about 220 milliseconds so, right up front, <strong><font color=#E6E022>it beats the loop</font></strong>. <strong><font color=#E6E022>Run it a second time and you'll find that it takes less time</font></strong>... anywhere from 73 to 186 milliseconds depending on what the system is doing.
 
