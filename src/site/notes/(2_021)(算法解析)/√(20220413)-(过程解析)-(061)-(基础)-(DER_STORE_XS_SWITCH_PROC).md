@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20220413-061-der-store-xs-switch-proc/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20220413-061-der-store-xs-switch-proc/"}
 ---
 
 
