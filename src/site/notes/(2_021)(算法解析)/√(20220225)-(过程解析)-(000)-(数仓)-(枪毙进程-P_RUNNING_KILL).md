@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20220225-000-p-running-kill/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20220225-000-p-running-kill/"}
 ---
 
 
@@ -12,10 +12,10 @@ table without id 入榜亮点, 入榜输出
 where contains(TITLES, "")
 ```
 
-```dataview
-table without id 萃取重点, 萃取难点, 萃取锚点, 萃取输出
-where contains(TITLES, "枪毙进程-P_RUNNING_KILL")
-```
+| 萃取重点 | 萃取难点 | 萃取锚点 | 萃取输出 |
+| ---- | ---- | ---- | ---- |
+| \-   | \-   | \-   | \-   |
+
 
 ```toc
 ```
