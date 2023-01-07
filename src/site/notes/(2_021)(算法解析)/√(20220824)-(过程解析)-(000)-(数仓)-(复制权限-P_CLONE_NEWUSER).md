@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20220824-000-p-clone-newuser/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20220824-000-p-clone-newuser/"}
 ---
 
 
@@ -12,10 +12,10 @@ table without id 入榜亮点, 入榜输出
 where contains(TITLES, "")
 ```
 
-```dataview
-table without id 萃取重点, 萃取难点, 萃取锚点, 萃取输出
-where contains(TITLES, "P_CLONE_NEWUSER")
-```
+| 萃取重点 | 萃取难点 | 萃取锚点 | 萃取输出 |
+| ---- | ---- | ---- | ---- |
+| \-   | \-   | \-   | \-   |
+
 
 ```toc
 ```
