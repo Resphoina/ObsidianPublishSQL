@@ -1,15 +1,15 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20211209-000-np-set-noexec-on-raiserror/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20211209-000-np-set-noexec-on-raiserror/"}
 ---
 
 
 # <font color=#DC143C>(20211209)-(算法原子)-(000)-(NP)-(SET NOEXEC ON与RAISERROR的比较)</font>
 URL:: [How to STOP or ABORT or BREAK the execution of the statements in the current batch and in the subsequent batches separated by GO Statement based on some condition in SQL SERVER](https://sqlhints.com/2015/05/23/how-to-stop-or-abort-or-break-the-execution-of-the-statements-in-the-current-batch-and-in-the-subsequent-batches-separated-by-go-statement-based-on-some-condition-in-sql-server/)
 
-```dataview
-table without id 萃取重点, 萃取难点, 萃取锚点, 萃取输出
-where contains(TITLES, "SET NOEXEC ON与RAISERROR的比较")
-```
+| 萃取重点 | 萃取难点 | 萃取锚点 | 萃取输出                                                                                                                                                                                                        |
+| ---- | ---- | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| \-   | \-   | \-   | <ul><li>从结果可以看出，RETURN语句能够停止当前批处理中PRINT语句的执行，但无法停止GO语句之后的PRINT语句的执行。</li><li>如果我们使用LOG选项引发严重性 >= 20 的错误，则RAISERROR可以解决此问题。但只有具有SysAdmin权限的用户才能引发具有此严重性的错误，并且还会终止连接。由于这个原因RAISERROR不是我解决这个问题的首选方法。</li></ul> |
+
 
 ```ad-question
 有时回过头来遇到一个场景，我需要<mark style="background: #E84A5FA6;">根据某些条件停止或中止当前批处理和后续批处理中下一个语句的执行</mark>。尝试了多种方法，但在大多数情况下能够停止当前批处理中后续语句的执行，<mark style="background: #E84A5FA6;">但不能停止go语句之后的语句</mark>。
