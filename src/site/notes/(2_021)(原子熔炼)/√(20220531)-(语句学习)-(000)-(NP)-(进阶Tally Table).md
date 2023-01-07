@@ -1,20 +1,20 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20220531-000-np-tally-table/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20220531-000-np-tally-table/"}
 ---
 
 
 # <font color=#DC143C>(20220531)-(语句学习)-(000)-(NP)-(进阶Tally Table)</font>
 URL:: [Tally OH! An Improved SQL 8K “CSV Splitter” Function](https://www.sqlservercentral.com/articles/tally-oh-an-improved-sql-8k-%e2%80%9ccsv-splitter%e2%80%9d-function)
 
-```dataview
-table without id 入榜亮点, 入榜输出
-where contains(TITLES, "Tally OH! An Improved SQL 8K CSV Splitter Function")
-```
+| 入榜亮点 | 入榜输出 |
+| ---- | ---- |
+| \-   | \-   |
 
-```dataview
-table without id 萃取重点
-where contains(TITLES, "Tally OH! An Improved SQL 8K CSV Splitter Function")
-```
+
+| 萃取重点 |
+| ---- |
+| \-   |
+
 
 ```toc
 ```
