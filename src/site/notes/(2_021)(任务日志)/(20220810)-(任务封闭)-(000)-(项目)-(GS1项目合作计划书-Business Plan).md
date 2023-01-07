@@ -1,14 +1,14 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20220810-000-gs-1-business-plan/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20220810-000-gs-1-business-plan/"}
 ---
 
 
 # <font color=#DC143C>(20220810)-(任务封闭)-(000)-(项目)-(GS1项目合作计划书-Business Plan)</font>
 
-```dataview
-table without id 入榜亮点, 入榜输出, 机会亮点
-where contains(TITLES, "GS1项目合作计划书-Business Plan")
-```
+| 入榜亮点 | 入榜输出 | 机会亮点 |
+| ---- | ---- | ---- |
+| \-   | \-   | \-   |
+
 
 ```toc
 ```
