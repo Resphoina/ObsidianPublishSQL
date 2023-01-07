@@ -1,15 +1,14 @@
 ---
-{"dg-publish":true,"permalink":"/7-000/7-000-brun-2021/20211213-777-happy-xiao-todoist/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/7-000/7-000-brun-2021/20211213-777-happy-xiao-todoist/"}
 ---
 
 
 # <font color=#DC143C>(20211213)-(工具搭建)-(777)-(软件)-(Happy_Xiao分享todoist技巧与使用心得)</font>
 URL:: [todoist技巧与使用心得](https://www.bilibili.com/video/BV1eE411D7is?from=search&seid=15594128304761465750&spm_id_from=333.337.0.0)
 
-```dataview
-table without id 萃取重点, 萃取难点, 萃取锚点, 萃取输出
-where contains(TITLES, "Happy_Xiaotodoist技巧与使用心得")
-```
+| 萃取重点 | 萃取难点 | 萃取锚点 | 萃取输出 |
+| ---- | ---- | ---- | ---- |
+
 
 ## 01.优势
 + 全平台(一个账户全部同步)
