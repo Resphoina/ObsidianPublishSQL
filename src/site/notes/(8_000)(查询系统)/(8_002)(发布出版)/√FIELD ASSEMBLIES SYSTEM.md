@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/8-000/8-002/field-assemblies-system/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/8-000/8-002/field-assemblies-system/"}
 ---
 
 
@@ -12,10 +12,10 @@ table without id 入榜亮点, 入榜输出
 where contains(TITLES, "")
 ```
 
-```dataview
-table without id 萃取重点, 萃取难点, 萃取锚点, 萃取输出
-where contains(TITLES, "FIELD ASSEMBLIES SYSTEM")
-```
+| 萃取重点 | 萃取难点 | 萃取锚点 | 萃取输出 |
+| ---- | ---- | ---- | ---- |
+| \-   | \-   | \-   | \-   |
+
 
 ```toc
 ```
