@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20220308-000-np-the-difference-between-rollup-and-cube/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20220308-000-np-the-difference-between-rollup-and-cube/"}
 ---
 
 
@@ -12,10 +12,10 @@ table without id 入榜亮点, 入榜输出
 where contains(TITLES, "")
 ```
 
-```dataview
-table without id 萃取函数, 萃取解法
-where contains(TITLES, "The Difference Between Rollup and Cube")
-```
+| 萃取函数 | 萃取解法                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| \-   | <ul><li>There is only one major difference between the functionality of the ROLLUP operator and the CUBE operator. ROLLUP operator generates aggregated results for the selected columns in a hierarchical way. On the other hand, CUBE generates a aggregated result that contains all the possible combinations for the selected columns.(ROLLUP运算符和CUBE运算符的功能只有一个主要区别。ROLLUP运算符以分层的方式为选定的列生成聚合结果。另一方面，CUBE生成一个包含所选列的所有可能组合的聚合结果)</li><li>ROLLUP and CUBE are performance tools. You should use ROLLUP if you want your data hierarchically and CUBE if you want all possible combinations.</li><li>It all depends what you need as to which you would choose. A simple rule of thumb is that if you have hierarchical data (for example, country->state->city or Department->Manager-Salesman, etc.), you usually want hierarchical results, and you use ROLLUP to group the data.</li></ul> |
+
 
 ```ad-note
 title: 问题背景
