@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/2-021/20221024-000-p-table-update/","dgHomeLink":true,"dgPassFrontmatter":false}
+{"dg-publish":true,"permalink":"/2-021/20221024-000-p-table-update/"}
 ---
 
 
@@ -12,10 +12,10 @@ table without id 入榜亮点, 入榜输出
 where contains(TITLES, "")
 ```
 
-```dataview
-table without id 萃取重点, 萃取难点, 萃取锚点, 萃取输出
-where contains(TITLES, "替身更新P_TABLE_UPDATE")
-```
+| 萃取重点 | 萃取难点 | 萃取锚点 | 萃取输出 |
+| ---- | ---- | ---- | ---- |
+| \-   | \-   | \-   | \-   |
+
 
 ## 测试案例
 ```SQL
